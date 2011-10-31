@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Hello World, Mole Attack_Activity!</string>
+    <string name="app_name">Mole Attack</string>
+    <string name="title">手机遥控打地鼠</string>
+    <string name="tips">Tips:\n
+    						 1.通过蓝牙连接电脑，建立连接\n
+    						 2.将手机屏幕面向左侧，握紧手机\n
+    						 3.将手机前后左右四个方向晃动来控制电脑屏幕上的锤子向四个方向移动\n
+    						 4.将手机向下晃动，屏幕上的锤子砸下\n
+    						 5.在晃动手机过程中请务必紧握手机，以免因动作幅度过大而将手机甩出。切记！！！</string>
+    <string name="start">Start</string>
+    <string name="pause">Pause</string>
+    <string name="resume">Resume</string>
+    <string name="end">End</string>
+    <string name="reset">Reset</string>
+    <string name="poweredby">Powered By:www.kimi-n.com</string>
+    <string name="connect">Connect</string>
+    <string name="about">About</string>
+    <string name="exit">Exit</string>
+    <string name="title_paired_devices">Paired Devices</string>
+    <string name="title_other_devices">Other Available Devices</string>
+    <string name="scan">Scan for new devices</string>
+    <string name="devicelist_title">Select a device to connect</string>
+    <string name="scanning">Scanning for devices...</string>
+    <string name="not_connected">You are not connected to a device</string>
+    <string name="disable">Sorry!BlueTooth is not enabled on your phone!</string>
+</resources>
