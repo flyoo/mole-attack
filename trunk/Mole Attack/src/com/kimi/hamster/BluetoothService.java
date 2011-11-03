@@ -309,8 +309,8 @@ public class BluetoothService {
                     bytes = mmInStream.read(buffer);
 
                     // Send the obtained bytes to the UI Activity
-                    mHandler.obtainMessage(Mole_Attack.MESSAGE_READ, bytes, -1, buffer)
-                            .sendToTarget();
+                    //mHandler.obtainMessage(Mole_Attack.MESSAGE_READ, bytes, -1, buffer)
+                           // .sendToTarget();
                 } catch (IOException e) {
                     Log.e("error", "disconnected", e);
                     connectionLost();
@@ -325,8 +325,8 @@ public class BluetoothService {
                 mmOutStream.write(buffer);
 
                 // Share the sent message back to the UI Activity
-                mHandler.obtainMessage(Mole_Attack.MESSAGE_WRITE, -1, -1, buffer)
-                        .sendToTarget();
+                //mHandler.obtainMessage(Mole_Attack.MESSAGE_WRITE, -1, -1, buffer)
+                //        .sendToTarget();
             } catch (IOException e) {
                 Log.e("error", "Exception during write", e);
             }

@@ -54,7 +54,7 @@ public class Mole_Attack extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-		
+        
 		mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
         if (mBluetoothAdapter == null) {
@@ -71,7 +71,7 @@ public class Mole_Attack extends Activity {
 				// TODO Auto-generated method stub
 				if(status==1)
 					return;
-				sendMessage(String.valueOf((int)3));
+				sendMessage(new byte[]{3});
 				sensormgr = (SensorManager)getSystemService(SENSOR_SERVICE);
 				sensor = sensormgr.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 				sensormgr.registerListener(slis, sensor,SensorManager.SENSOR_DELAY_GAME);
@@ -89,13 +89,13 @@ public class Mole_Attack extends Activity {
 					return;
 				if(v.getTag().toString().equals(getResources().getString(R.string.pause)))
 				{
-					sendMessage(String.valueOf((int)4));
+					sendMessage(new byte[]{4});
 					btnPauseResume.setText(R.string.resume);
 					btnPauseResume.setTag(getResources().getString(R.string.resume));
 				}
 				else if(v.getTag().toString().equals(getResources().getString(R.string.resume)))
 				{
-					sendMessage(String.valueOf((int)5));
+					sendMessage(new byte[]{5});
 					btnPauseResume.setText(R.string.pause);
 					btnPauseResume.setTag(getResources().getString(R.string.pause));
 				}
@@ -108,7 +108,9 @@ public class Mole_Attack extends Activity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				sendMessage(String.valueOf((int)6));
+				sensormgr.unregisterListener(slis);
+				status = 0;
+				sendMessage(new byte[]{6});
 			}
 		});
         
@@ -118,7 +120,7 @@ public class Mole_Attack extends Activity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				sendMessage(String.valueOf((int)2));
+				sendMessage(new byte[]{2});
 			}
 		});
     }
@@ -126,30 +128,58 @@ public class Mole_Attack extends Activity {
     private SensorEventListener slis = new SensorEventListener() {
 		
 		public void onSensorChanged(SensorEvent event) {
-			// TODO Auto-generated method stub
 			//float last_x=0;
 			x = event.values[SensorManager.DATA_X];
 			y = event.values[SensorManager.DATA_Y];
 			z = event.values[SensorManager.DATA_Z];
+			time = event.timestamp/1000000;
+
 			if(last_x==0&&last_y==0&&last_z==0)
 			{
 				last_x=x;
 				last_y=y;
 				last_z=z;
-				return;
-			}
-			if(Math.abs(last_y-y)>10||Math.abs(last_z-z)>10)
-			{
-				String msg = "0"+String.valueOf((int)z)+String.valueOf((int)z);
-				sendMessage(msg);
-				last_z=z;
-				last_y=y;
+				last_time = time;
+				//return;
 			}
 			
-			if(Math.abs(last_x-x)>50)
+			if(x>=5&&last_x<=-15)
 			{
-				sendMessage(String.valueOf(1));
+				sendMessage(new byte[]{1});
+				Toast.makeText(getApplicationContext(), String.valueOf(x)+String.valueOf(last_x), Toast.LENGTH_SHORT).show();
 				last_x=x;
+				return;
+			}
+			
+			if(Math.abs(x)>5)
+			{
+				last_x=x;
+			}
+			
+			if(Math.abs(last_y-y)>30||Math.abs(last_z-z)>30)
+			{
+				/*Log.d("test2","time:"+time);
+				Log.d("test2","time-last_time:"+(time - last_time));
+				Log.d("test2","x:"+x);
+				Log.d("test2","last_x:"+last_x);
+				Log.d("test2","y:"+y);
+				Log.d("test2","last_y:"+last_y);
+				Log.d("test2","z"+z);
+				Log.d("test2","last_z:"+last_z);*/
+				byte[] msg = new byte[5];
+				msg[0] = 0;
+				msg[1] = (byte)(-z);
+				msg[2] = (byte)y;
+				//if(Math.abs(last_time-time)>128)
+				//	msg[3] = 0;
+				//else
+				msg[3] = (byte)((time-last_time)>>8);
+				msg[4] = (byte)((time-last_time)&0xff);
+				last_z = z;
+				last_y = y;
+				last_time = time;
+				sendMessage(msg);
+				//sendMessage(new byte[]{0,0,0,(byte)(211>>8),(byte)(211&0xff)});
 			}
 			
 		}
@@ -172,7 +202,7 @@ public class Mole_Attack extends Activity {
             }
             break;
         case REQUEST_ENABLE_BT:
-            // When the request to enable Bluetooth returns
+            
             if (resultCode != Activity.RESULT_OK) {
             	Toast.makeText(this, R.string.disable, Toast.LENGTH_SHORT).show();
                 finish();
@@ -208,18 +238,17 @@ public class Mole_Attack extends Activity {
      * Sends a message.
      * @param message  A string of text to send.
      */
-    private void sendMessage(String message) {
-        // Check that we're actually connected before trying anything
+    private void sendMessage(byte[] message) {
+        
         if (mbtService.getState() != BluetoothService.STATE_CONNECTED) {
             Toast.makeText(this, R.string.not_connected, Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Check that there's actually something to send
-        if (message.length() > 0) {
-            // Get the message bytes and tell the BluetoothChatService to write
-            byte[] send = message.getBytes();
-            mbtService.write(send);
+        
+        if (message.length > 0) {
+            //byte[] send = message.getBytes();
+            mbtService.write(message);
         }
     }
 
